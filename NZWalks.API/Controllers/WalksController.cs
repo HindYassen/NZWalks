@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NZWalks.API.CustomActionFilter;
 using NZWalks.API.Models.Domain;
-using NZWalks.API.Models.DTO;
 using NZWalks.API.Models.DTO.WalksDto;
 using NZWalks.API.Repository.WalkRepo;
 
@@ -22,17 +22,26 @@ namespace NZWalks.API.Controllers
         //Create Walk
         //Post:https:localhost:7290/api/walks
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddWalkRequestDto addWalkRequestDto)
         {
+            //use manual validation for addWalkRequestDto because we are not using [ApiController] attribute in this controller
+            //if (ModelState.IsValid)
+            //{
             //Map addWalkRequestDto to domain model
             var walkDomainModel = _mapper.Map<Walk>(addWalkRequestDto);
 
-            //Pass details to repository
-            var createdWalk = await _walkRepository.Create(walkDomainModel);
+                //Pass details to repository
+                var createdWalk = await _walkRepository.Create(walkDomainModel);
 
-            //MAP or Convert Domain Model To DTO using AutoMapper
-            var walkDto = _mapper.Map<WalkDto>(createdWalk);
-            return CreatedAtAction(nameof(Create), new { id = walkDto.Id }, walkDto);
+                //MAP or Convert Domain Model To DTO using AutoMapper
+                var walkDto = _mapper.Map<WalkDto>(createdWalk);
+                return CreatedAtAction(nameof(Create), new { id = walkDto.Id }, walkDto);
+            //}
+            //else
+            //{
+            //    return BadRequest(ModelState);
+            //}
         }
 
         //GET ALL Walks
@@ -63,20 +72,29 @@ namespace NZWalks.API.Controllers
         //Updare Walk
         //Put:https://localhost:7290/api/walks/{id}
         [HttpPut]
+        [ValidateModel]
         [Route("{id:guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateWalkRequestDto updateWalkRequestDto)
         {
+            //use manual validation for updateWalkRequestDto because we are not using [ApiController] attribute in this controller
+            //if (ModelState.IsValid)
+            //{
             //Map updateWalkRequestDto to domain model
             var walkDomainModel = _mapper.Map<Walk>(updateWalkRequestDto);
-            //Pass details to repository
-            var updatedWalk = await _walkRepository.Update(id, walkDomainModel);
-            if (updatedWalk == null)
-            {
-                return NotFound();
-            }
-            //MAP or Convert Domain Model To DTO using AutoMapper
-            var walkDto = _mapper.Map<WalkDto>(updatedWalk);
-            return Ok(walkDto);
+                //Pass details to repository
+                var updatedWalk = await _walkRepository.Update(id, walkDomainModel);
+                if (updatedWalk == null)
+                {
+                    return NotFound();
+                }
+                //MAP or Convert Domain Model To DTO using AutoMapper
+                var walkDto = _mapper.Map<WalkDto>(updatedWalk);
+                return Ok(walkDto);
+            //}
+            //else
+            //{
+            //    return BadRequest(ModelState);
+            //}
         }
 
         //Delete Walk

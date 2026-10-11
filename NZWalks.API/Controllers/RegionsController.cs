@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using NZWalks.API.CustomActionFilter;
 using NZWalks.API.Models.Domain;
 using NZWalks.API.Models.DTO;
 using NZWalks.API.Repository;
@@ -109,6 +110,7 @@ namespace NZWalks.API.Controllers
 
         //POST:https://localhost:7290/api/regions
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             //MAP or Convert AddRegionRequestDto To Domain Model
@@ -119,6 +121,10 @@ namespace NZWalks.API.Controllers
             //    RegionImageURL = addRegionRequestDto.RegionImageURL
             //};
 
+
+            //manually validation instead of using ValidateModel
+            //if (ModelState.IsValid)
+            //{
             //MAP or Convert AddRegionRequestDto To Domain Model using AutoMapper
             var regionDomainModel = _mapper.Map<Region>(addRegionRequestDto);
 
@@ -145,10 +151,16 @@ namespace NZWalks.API.Controllers
             //MAP or Convert Domain Model To DTO using AutoMapper
             var regionDto = _mapper.Map<RegionDto>(regionDomainModel);
             return CreatedAtAction(nameof(Create), new { id = regionDto.Id }, regionDto);
+            //}
+            //else
+            //{
+            //    return BadRequest(ModelState);
+            //}
         }
 
         //PUT https://localhost:7290/api/regions/{id}
         [HttpPut]
+        [ValidateModel]
         [Route("{id:Guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
@@ -167,6 +179,10 @@ namespace NZWalks.API.Controllers
             //    Name = updateRegionRequestDto.Name,
             //    RegionImageURL = updateRegionRequestDto.RegionImageURL
             //};
+
+            //Validate ModelState manually instead of using ValidateModel
+            //if (ModelState.IsValid)
+            //{
             //1.Map updateRegionRequestDto to Domain Model using AutoMapper
             var regionDomainModel = _mapper.Map<Region>(updateRegionRequestDto);
 
@@ -198,6 +214,11 @@ namespace NZWalks.API.Controllers
             //};
             var regionDto = _mapper.Map<RegionDto>(regionDomainModel);
             return Ok(regionDto);
+            //}
+            //else
+            //{
+            //    return BadRequest(ModelState);
+            //}
 
         }
 
