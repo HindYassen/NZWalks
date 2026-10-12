@@ -31,12 +31,12 @@ namespace NZWalks.API.Controllers
             //Map addWalkRequestDto to domain model
             var walkDomainModel = _mapper.Map<Walk>(addWalkRequestDto);
 
-                //Pass details to repository
-                var createdWalk = await _walkRepository.Create(walkDomainModel);
+            //Pass details to repository
+            var createdWalk = await _walkRepository.Create(walkDomainModel);
 
-                //MAP or Convert Domain Model To DTO using AutoMapper
-                var walkDto = _mapper.Map<WalkDto>(createdWalk);
-                return CreatedAtAction(nameof(Create), new { id = walkDto.Id }, walkDto);
+            //MAP or Convert Domain Model To DTO using AutoMapper
+            var walkDto = _mapper.Map<WalkDto>(createdWalk);
+            return CreatedAtAction(nameof(Create), new { id = walkDto.Id }, walkDto);
             //}
             //else
             //{
@@ -45,11 +45,12 @@ namespace NZWalks.API.Controllers
         }
 
         //GET ALL Walks
-        //GET:https://localhost7290/api/walks
+        //GET:https://localhost7290/api/walks?filterOn=Name&filterQuery=Track&sortBy=Name&isAscending=true&pageNumber=1&pageSize=10
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery,
+            [FromQuery] string? sortBy, [FromQuery] bool isAscending = true, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000)
         {
-            var walks = await _walkRepository.GetAll();
+            var walks = await _walkRepository.GetAll(filterOn, filterQuery, sortBy, isAscending, pageNumber, pageSize);
             var walkDtos = _mapper.Map<List<WalkDto>>(walks);
             return Ok(walkDtos);
         }
@@ -81,15 +82,15 @@ namespace NZWalks.API.Controllers
             //{
             //Map updateWalkRequestDto to domain model
             var walkDomainModel = _mapper.Map<Walk>(updateWalkRequestDto);
-                //Pass details to repository
-                var updatedWalk = await _walkRepository.Update(id, walkDomainModel);
-                if (updatedWalk == null)
-                {
-                    return NotFound();
-                }
-                //MAP or Convert Domain Model To DTO using AutoMapper
-                var walkDto = _mapper.Map<WalkDto>(updatedWalk);
-                return Ok(walkDto);
+            //Pass details to repository
+            var updatedWalk = await _walkRepository.Update(id, walkDomainModel);
+            if (updatedWalk == null)
+            {
+                return NotFound();
+            }
+            //MAP or Convert Domain Model To DTO using AutoMapper
+            var walkDto = _mapper.Map<WalkDto>(updatedWalk);
+            return Ok(walkDto);
             //}
             //else
             //{
