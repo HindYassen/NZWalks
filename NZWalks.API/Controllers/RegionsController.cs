@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NZWalks.API.CustomActionFilter;
 using NZWalks.API.Models.Domain;
@@ -10,6 +11,8 @@ namespace NZWalks.API.Controllers
     //https://localhost:7290/api/regions
     [Route("api/[controller]")]
     [ApiController]
+    //if you want to authorize all the actions in the controller, you can use the Authorize attribute at the controller level. This will require authentication for all actions in the controller.
+    // [Authorize]
     public class RegionsController : ControllerBase
     {
         //Injecting DBContext to Controller with no Abstraction layer no the best practice
@@ -28,6 +31,7 @@ namespace NZWalks.API.Controllers
         }
         //GET:https://localhost:7290/api/regions
         [HttpGet]
+        [Authorize(Roles = "Reader")]
         public async Task<IActionResult> GetAll()
         {
             //var regions = new List<Region>
@@ -78,6 +82,7 @@ namespace NZWalks.API.Controllers
         }
         [HttpGet]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Reader")]
         //GET:https://localhost:7290/api/regions/{id}
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
@@ -111,6 +116,7 @@ namespace NZWalks.API.Controllers
         //POST:https://localhost:7290/api/regions
         [HttpPost]
         [ValidateModel]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             //MAP or Convert AddRegionRequestDto To Domain Model
@@ -162,6 +168,7 @@ namespace NZWalks.API.Controllers
         [HttpPut]
         [ValidateModel]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //Check if Region Exist
@@ -225,6 +232,7 @@ namespace NZWalks.API.Controllers
         //DELETE:https://localhost:7290/api/regions/{id}
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             //sync
